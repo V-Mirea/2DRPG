@@ -14,12 +14,17 @@ public class EquippableController : MonoBehaviour
             InventoryController.ActiveSlotChanged += InventoryController_ActiveSlotChanged;
     }
 
-    public void EquipItem(GameObject item) {
-        Destroy(handItem);
-        handItem = GameObject.Instantiate(item, HandLocation.position, Quaternion.identity, transform);
+    private void InventoryController_ActiveSlotChanged(object sender, SlotStateChangeEventArgs e) {
+        if (HandLocation.childCount > 0) {
+            Destroy(HandLocation.GetChild(0).gameObject);
+        }
+
+        if (e.InventoryObject?.GetComponent<Equipabble>() != null)
+            EquipItem(e.InventoryObject);
     }
 
-    private void InventoryController_ActiveSlotChanged(object sender, int e) {
-        throw new System.NotImplementedException();
+    public void EquipItem(GameObject item) {
+        handItem = GameObject.Instantiate(item, HandLocation.position, Quaternion.identity, HandLocation);
+        handItem.SetActive(true);
     }
 }

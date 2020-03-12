@@ -35,14 +35,14 @@ public class InventoryUIManager : MonoBehaviour
         InventoryController.ActiveSlotChanged += InventoryController_ActiveSlotChanged;
     }
 
-    private void InventoryController_ActiveSlotChanged(object sender, int slot) {
+    private void InventoryController_ActiveSlotChanged(object sender, SlotStateChangeEventArgs eventArgs) {
         UnhighlightSlot(activeSlot);
-        HighlightSlot(slot);
-        activeSlot = slot;
+        HighlightSlot(eventArgs.SlotIndex);
+        activeSlot = eventArgs.SlotIndex;
     }
 
     private void InventoryController_ItemPickedUp(object sender, SlotStateChangeEventArgs e) {
-        AddItem(e.InventoryRepresentation, e.SlotIndex);
+        AddItem(e.InventoryObject, e.SlotIndex);
     }
 
     public GameObject AddItem(GameObject InventoryItem, int index) {
@@ -53,7 +53,9 @@ public class InventoryUIManager : MonoBehaviour
         
         GameObject inventorySlot = inventorySlots[index];
         var inventoryItem = Instantiate(InventoryItem, inventorySlot.transform.position, Quaternion.identity, inventorySlot.transform);
-        inventoryItem.transform.localScale = Vector3.one;
+
+        inventoryItem.GetComponent<RectTransform>().sizeDelta = inventorySlot.GetComponent<RectTransform>().sizeDelta;
+        inventoryItem.GetComponent<Holdable>().enabled = false;
 
         return inventoryItem;
     }

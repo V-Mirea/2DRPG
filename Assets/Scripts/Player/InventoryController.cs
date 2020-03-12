@@ -12,35 +12,32 @@ public class InventoryController : MonoBehaviour
     public int ActiveSlot { get; private set; }
     public int EmptySlots => items.Where(i => i is null).Count();
 
-    private InventoryItemData[] items;
+    private GameObject[] items;
     private InputMaster inputActions;
 
     public event EventHandler<SlotStateChangeEventArgs> ItemPickedUp;
-    public event EventHandler<int> ActiveSlotChanged;
+    public event EventHandler<SlotStateChangeEventArgs> ActiveSlotChanged;
 
     private void Awake() {
-        items = new InventoryItemData[TotalSlots];
+        items = new GameObject[TotalSlots];
     }
 
-    public bool PickupItem(GameObject groundItem) {
+    public bool TryPickupItem(GameObject groundItem) {
         if (EmptySlots <= 0 || groundItem == null) {
             return false;
         }
 
-        Entity groundEntity = groundItem.GetComponent<Entity>();
-        if (groundEntity == null) {
-            throw new MissingComponentException("Cannot pickup a GameObject without an attached entity component");
-        }
-
         int inventoryIndex = System.Array.IndexOf(items, null);
-        items[inventoryIndex] = groundEntity.data.InventoryRepresentation.GetComponent<InventoryItem>().data;
+        items[inventoryIndex] = groundItem;
         var eventArgs = new SlotStateChangeEventArgs() {
-            InventoryRepresentation = groundEntity.data.InventoryRepresentation,
+            InventoryObject = groundItem,
             SlotIndex = inventoryIndex
         };
 
         ItemPickedUp?.Invoke(this, eventArgs);
-        Destroy(groundItem);
+        if (inventoryIndex == ActiveSlot) ActiveSlotChanged?.Invoke(this, eventArgs);
+
+        groundItem.SetActive(false);
         return true;
     }
 
@@ -53,17 +50,17 @@ public class InventoryController : MonoBehaviour
         if (ActiveSlot >= TotalSlots) ActiveSlot = 0;
         else if (ActiveSlot < 0) ActiveSlot = TotalSlots - 1;
 
-        /*ateChangeEventArgs eventArgs = new SlotStateChangeEventArgs() {
-            InventoryRepresentation = items[ActiveSlot].,
-        }
-        */
+        SlotStateChangeEventArgs eventArgs = new SlotStateChangeEventArgs() {
+            InventoryObject = items[ActiveSlot],
+            SlotIndex = ActiveSlot
+        };
 
-        ActiveSlotChanged?.Invoke(this, ActiveSlot);
+        ActiveSlotChanged?.Invoke(this, eventArgs);
     }
 }
 
 public class SlotStateChangeEventArgs : EventArgs
 {
-    public GameObject InventoryRepresentation { get; set; }
+    public GameObject InventoryObject { get; set; }
     public int SlotIndex { get; set; }
 }
