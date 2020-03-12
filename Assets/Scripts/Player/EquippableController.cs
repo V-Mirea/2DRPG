@@ -25,6 +25,8 @@ public class EquippableController : MonoBehaviour
 
     public void EquipItem(GameObject item) {
         handItem = GameObject.Instantiate(item, HandLocation.position, Quaternion.identity, HandLocation);
+        handItem.GetComponent<SpriteRenderer>().sortingLayerName = "Player";
+        handItem.GetComponent<SpriteRenderer>().sortingOrder = 0;
         handItem.SetActive(true);
     }
 }
