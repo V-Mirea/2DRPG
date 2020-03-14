@@ -65,9 +65,9 @@
   <ItemGroup>
     <Compile Include="Assets\InputMaster.cs" />
     <Compile Include="Assets\Scripts\InventoryUIManager.cs" />
+    <Compile Include="Assets\Scripts\Item\DepthController.cs" />
     <Compile Include="Assets\Scripts\Item\Equipabble.cs" />
     <Compile Include="Assets\Scripts\Item\Holdable.cs" />
-    <Compile Include="Assets\Scripts\Item\LayerController.cs" />
     <Compile Include="Assets\Scripts\Player\CollisionHandler.cs" />
     <Compile Include="Assets\Scripts\Player\EquippableController.cs" />
     <Compile Include="Assets\Scripts\Player\InventoryController.cs" />

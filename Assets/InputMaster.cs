@@ -33,6 +33,14 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """"
+                },
+                {
+                    ""name"": ""Drop Item"",
+                    ""type"": ""Button"",
+                    ""id"": ""a1f27112-e6eb-40a2-ad28-16c92938f0fa"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """"
                 }
             ],
             ""bindings"": [
@@ -101,6 +109,17 @@ public class @InputMaster : IInputActionCollection, IDisposable
                     ""action"": ""Change Item"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""eb4a2bf1-ee5c-4e63-9d73-8cdf979f6c97"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Drop Item"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         },
@@ -138,6 +157,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_ChangeItem = m_Player.FindAction("Change Item", throwIfNotFound: true);
+        m_Player_DropItem = m_Player.FindAction("Drop Item", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_OpenInventory = m_UI.FindAction("Open Inventory", throwIfNotFound: true);
@@ -192,12 +212,14 @@ public class @InputMaster : IInputActionCollection, IDisposable
     private IPlayerActions m_PlayerActionsCallbackInterface;
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_ChangeItem;
+    private readonly InputAction m_Player_DropItem;
     public struct PlayerActions
     {
         private @InputMaster m_Wrapper;
         public PlayerActions(@InputMaster wrapper) { m_Wrapper = wrapper; }
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @ChangeItem => m_Wrapper.m_Player_ChangeItem;
+        public InputAction @DropItem => m_Wrapper.m_Player_DropItem;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -213,6 +235,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @ChangeItem.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeItem;
                 @ChangeItem.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeItem;
                 @ChangeItem.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnChangeItem;
+                @DropItem.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDropItem;
+                @DropItem.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDropItem;
+                @DropItem.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnDropItem;
             }
             m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
@@ -223,6 +248,9 @@ public class @InputMaster : IInputActionCollection, IDisposable
                 @ChangeItem.started += instance.OnChangeItem;
                 @ChangeItem.performed += instance.OnChangeItem;
                 @ChangeItem.canceled += instance.OnChangeItem;
+                @DropItem.started += instance.OnDropItem;
+                @DropItem.performed += instance.OnDropItem;
+                @DropItem.canceled += instance.OnDropItem;
             }
         }
     }
@@ -264,6 +292,7 @@ public class @InputMaster : IInputActionCollection, IDisposable
     {
         void OnMove(InputAction.CallbackContext context);
         void OnChangeItem(InputAction.CallbackContext context);
+        void OnDropItem(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
